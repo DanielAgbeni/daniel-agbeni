@@ -5,6 +5,7 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'danielagbeni12@gmail.com';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? 'change-me';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  trustHost: true,
   session: { strategy: 'jwt' },
   providers: [
     Credentials({
