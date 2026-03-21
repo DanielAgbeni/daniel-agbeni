@@ -1,11 +1,6 @@
-import { convex } from '@/lib/convex';
+import { getPortfolioContent } from '@/lib/portfolio';
 
 export async function GET() {
-  const [stackMatrix, registry, systemLogs] = await Promise.all([
-    convex.query('stackMatrix:list', {}),
-    convex.query('registry:list', {}),
-    convex.query('systemLogs:list', {})
-  ]);
-
-  return Response.json({ stackMatrix, registry, systemLogs });
+  const content = await getPortfolioContent();
+  return Response.json(content);
 }
