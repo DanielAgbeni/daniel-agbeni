@@ -23,20 +23,28 @@ export default function AdminPanel() {
   }, []);
 
   const save = async (collection: string, payload: unknown) => {
-    await fetch(`/api/admin/${collection}`, {
+    const res = await fetch(`/api/admin/${collection}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || 'Failed to save');
+    }
     await load();
   };
 
   const remove = async (collection: string, id: string) => {
-    await fetch(`/api/admin/${collection}`, {
+    const res = await fetch(`/api/admin/${collection}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id })
     });
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || 'Failed to delete');
+    }
     await load();
   };
 
@@ -140,6 +148,7 @@ type ProjectFormData = z.infer<typeof projectSchema>;
 
 function ProjectForm({ onSave, onUpload }: { onSave: (payload: Record<string, unknown>) => Promise<void>; onUpload: (file: File) => Promise<{ storageId: string }>; }) {
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ProjectFormData>({
     resolver: zodResolver(projectSchema),
@@ -157,18 +166,23 @@ function ProjectForm({ onSave, onUpload }: { onSave: (payload: Record<string, un
       setUploading(false);
     }
 
-    await onSave({
-      id: data.id,
-      title: data.title,
-      description: data.description,
-      techStack: data.techStack.split(',').map((s) => s.trim()).filter(Boolean),
-      imageId: finalImageId,
-      liveUrl: data.liveUrl,
-      githubUrl: data.githubUrl,
-      featured: data.featured
-    });
-    setImagePreview(null);
-    reset();
+    try {
+      setError(null);
+      await onSave({
+        id: data.id,
+        title: data.title,
+        description: data.description,
+        techStack: data.techStack.split(',').map((s) => s.trim()).filter(Boolean),
+        imageId: finalImageId,
+        liveUrl: data.liveUrl,
+        githubUrl: data.githubUrl,
+        featured: data.featured
+      });
+      setImagePreview(null);
+      reset();
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
 
   return (
@@ -232,6 +246,7 @@ function ProjectForm({ onSave, onUpload }: { onSave: (payload: Record<string, un
           {uploading ? 'Uploading...' : 'Save Project'}
         </button>
       </div>
+      {error && <p className="col-span-full text-xs text-red-500 font-medium px-1">Error: {error}</p>}
     </form>
   );
 }
@@ -245,11 +260,17 @@ const serviceSchema = z.object({
 type ServiceFormData = z.infer<typeof serviceSchema>;
 
 function ServiceForm({ onSave }: { onSave: (payload: Record<string, unknown>) => Promise<void> }) {
+  const [error, setError] = useState<string | null>(null);
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ServiceFormData>({ resolver: zodResolver(serviceSchema) });
 
   const onSubmit = async (data: ServiceFormData) => {
-    await onSave(data);
-    reset();
+    try {
+      setError(null);
+      await onSave(data);
+      reset();
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
 
   return (
@@ -269,8 +290,9 @@ function ServiceForm({ onSave }: { onSave: (payload: Record<string, unknown>) =>
         <input {...register('icon')} placeholder="Icon name (e.g., Code, Server) *" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary placeholder:text-text/40" />
         {errors.icon && <p className="text-xs text-red-500 mt-1">{errors.icon.message}</p>}
       </div>
-      <div className="col-span-full flex justify-end">
+      <div className="col-span-full flex flex-col gap-2 items-end">
         <button className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90">Save Service</button>
+        {error && <p className="text-xs text-red-500 font-medium">Error: {error}</p>}
       </div>
     </form>
   );
@@ -286,14 +308,20 @@ const expSchema = z.object({
 type ExpFormData = z.infer<typeof expSchema>;
 
 function ExperienceForm({ onSave }: { onSave: (payload: Record<string, unknown>) => Promise<void> }) {
+  const [error, setError] = useState<string | null>(null);
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ExpFormData>({ 
     resolver: zodResolver(expSchema),
     defaultValues: { order: "0" }
   });
 
   const onSubmit = async (data: ExpFormData) => {
-    await onSave({ ...data, order: Number(data.order) });
-    reset();
+    try {
+      setError(null);
+      await onSave({ ...data, order: Number(data.order) });
+      reset();
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
 
   return (
@@ -316,26 +344,33 @@ function ExperienceForm({ onSave }: { onSave: (payload: Record<string, unknown>)
       <div className="col-span-full sm:col-span-1">
         <input {...register('order')} type="number" placeholder="Order (0) *" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary placeholder:text-text/40" />
       </div>
-      <div className="col-span-full flex justify-end">
+      <div className="col-span-full flex flex-col gap-2 items-end">
         <button className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90">Save Experience</button>
+        {error && <p className="text-xs text-red-500 font-medium">Error: {error}</p>}
       </div>
     </form>
   );
 }
 
 const skillSchema = z.object({
-  id: z.string().transform(transformId).optional(),
+  id: convexIdBase.optional(),
   category: z.enum(['frontend', 'backend', 'mobile', 'cloud']),
   name: z.string().min(1, "Skill Name is required")
 });
 type SkillFormData = z.infer<typeof skillSchema>;
 
 function SkillForm({ onSave }: { onSave: (payload: Record<string, unknown>) => Promise<void> }) {
+  const [error, setError] = useState<string | null>(null);
   const { register, handleSubmit, reset, formState: { errors } } = useForm<SkillFormData>({ resolver: zodResolver(skillSchema) });
 
   const onSubmit = async (data: SkillFormData) => {
-    await onSave(data);
-    reset();
+    try {
+      setError(null);
+      await onSave(data);
+      reset();
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
 
   return (
@@ -356,8 +391,9 @@ function SkillForm({ onSave }: { onSave: (payload: Record<string, unknown>) => P
         <input {...register('name')} placeholder="Skill Name *" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary placeholder:text-text/40" />
         {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
       </div>
-      <div className="col-span-full flex justify-end">
+      <div className="col-span-full flex flex-col gap-2 items-end">
         <button className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90">Save Skill</button>
+        {error && <p className="text-xs text-red-500 font-medium">Error: {error}</p>}
       </div>
     </form>
   );

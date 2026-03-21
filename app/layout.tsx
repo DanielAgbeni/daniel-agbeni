@@ -7,7 +7,7 @@ const heading = Space_Grotesk({ subsets: ['latin'], variable: '--font-heading' }
 
 export const metadata: Metadata = {
   title: 'Daniel Agbeni | Full-Stack Portfolio',
-  description: 'Production-grade full-stack and mobile engineering portfolio powered by Next.js and Convex.'
+  description: 'Production-grade full-stack and mobile engineering portfolio'
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
