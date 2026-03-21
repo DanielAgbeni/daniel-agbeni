@@ -180,8 +180,8 @@ function ProjectForm({ onSave, onUpload }: { onSave: (payload: Record<string, un
       });
       setImagePreview(null);
       reset();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError((err as Error).message);
     }
   };
 
@@ -268,8 +268,8 @@ function ServiceForm({ onSave }: { onSave: (payload: Record<string, unknown>) =>
       setError(null);
       await onSave(data);
       reset();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError((err as Error).message);
     }
   };
 
@@ -319,8 +319,8 @@ function ExperienceForm({ onSave }: { onSave: (payload: Record<string, unknown>)
       setError(null);
       await onSave({ ...data, order: Number(data.order) });
       reset();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError((err as Error).message);
     }
   };
 
@@ -368,8 +368,8 @@ function SkillForm({ onSave }: { onSave: (payload: Record<string, unknown>) => P
       setError(null);
       await onSave(data);
       reset();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError((err as Error).message);
     }
   };
 

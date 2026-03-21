@@ -33,8 +33,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ col
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result = await convex.mutation(fn.upsert as any, body);
     return Response.json({ ok: true, result });
-  } catch (err: any) {
-    return Response.json({ error: err.message || 'Mutation failed' }, { status: 500 });
+  } catch (err: unknown) {
+    return Response.json({ error: (err as Error).message || 'Mutation failed' }, { status: 500 });
   }
 }
 
@@ -55,7 +55,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ c
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result = await convex.mutation(fn.remove as any, { id });
     return Response.json({ ok: true, result });
-  } catch (err: any) {
-    return Response.json({ error: err.message || 'Deletion failed' }, { status: 500 });
+  } catch (err: unknown) {
+    return Response.json({ error: (err as Error).message || 'Deletion failed' }, { status: 500 });
   }
 }
