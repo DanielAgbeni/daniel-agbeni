@@ -1,5 +1,6 @@
 import { auth } from '@/lib/auth';
 import { convex } from '@/lib/convex';
+import { revalidatePath } from 'next/cache';
 
 type Collection = 'projects' | 'services' | 'experience' | 'skills';
 
@@ -32,6 +33,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ col
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result = await convex.mutation(fn.upsert as any, body);
+    revalidatePath('/');
     return Response.json({ ok: true, result });
   } catch (err: unknown) {
     return Response.json({ error: (err as Error).message || 'Mutation failed' }, { status: 500 });
@@ -54,6 +56,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ c
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result = await convex.mutation(fn.remove as any, { id });
+    revalidatePath('/');
     return Response.json({ ok: true, result });
   } catch (err: unknown) {
     return Response.json({ error: (err as Error).message || 'Deletion failed' }, { status: 500 });
