@@ -2,20 +2,15 @@
 
 import { signOut } from 'next-auth/react';
 import { FormEvent, useEffect, useState } from 'react';
+import type { Experience, PortfolioContent, Project, Service, Skill, SkillCategory } from '@/lib/types';
 
-type Content = {
-  stackMatrix: any[];
-  registry: any[];
-  systemLogs: any[];
-};
-
-const initialContent: Content = { stackMatrix: [], registry: [], systemLogs: [] };
+const initialState: PortfolioContent = { projects: [], services: [], experience: [], skills: [] };
 
 export default function AdminPanel() {
-  const [content, setContent] = useState<Content>(initialContent);
+  const [content, setContent] = useState<PortfolioContent>(initialState);
 
   const load = async () => {
-    const res = await fetch('/api/content');
+    const res = await fetch('/api/content', { cache: 'no-store' });
     setContent(await res.json());
   };
 
@@ -49,154 +44,152 @@ export default function AdminPanel() {
       headers: { 'Content-Type': file.type },
       body: file
     });
-    return storageRes.json();
+    return storageRes.json() as Promise<{ storageId: string }>;
   };
 
   return (
-    <main className="admin-wrap form-grid">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Admin Console</h1>
-        <button className="btn ghost" onClick={() => signOut({ callbackUrl: '/admin/login' })}>Sign out</button>
+    <main className="mx-auto max-w-6xl space-y-8 px-6 py-10">
+      <div className="flex items-center justify-between">
+        <h1 className="font-heading text-3xl font-bold">Admin Dashboard</h1>
+        <button className="rounded-xl border border-primary/20 px-4 py-2 text-sm" onClick={() => signOut({ callbackUrl: '/admin/login' })}>Sign out</button>
       </div>
 
-      <section className="card form-grid">
-        <h2>Stack_Matrix</h2>
-        <StackForm onSave={(payload) => save('stackMatrix', payload)} />
-        {content.stackMatrix.map((item) => (
-          <div key={item._id}>
-            {item.category} - {item.name}
-            <button className="btn ghost" onClick={() => remove('stackMatrix', item._id)}>Delete</button>
-          </div>
-        ))}
-      </section>
+      <AdminCard title="Projects">
+        <ProjectForm onSave={(payload) => save('projects', payload)} onUpload={uploadImage} />
+        <List items={content.projects} render={(item) => `${item.title} ${item.featured ? '• featured' : ''}`} onEdit={(item) => save('projects', item)} onDelete={(id) => remove('projects', id)} />
+      </AdminCard>
 
-      <section className="card form-grid">
-        <h2>Registry</h2>
-        <RegistryForm
-          onSave={(payload) => save('registry', payload)}
-          onUpload={uploadImage}
-        />
-        {content.registry.map((item) => (
-          <div key={item._id}>
-            {item.title}
-            <button className="btn ghost" onClick={() => remove('registry', item._id)}>Delete</button>
-          </div>
-        ))}
-      </section>
+      <AdminCard title="Services">
+        <ServiceForm onSave={(payload) => save('services', payload)} />
+        <List items={content.services} render={(item) => item.title} onEdit={(item) => save('services', item)} onDelete={(id) => remove('services', id)} />
+      </AdminCard>
 
-      <section className="card form-grid">
-        <h2>System Logs</h2>
-        <LogForm onSave={(payload) => save('systemLogs', payload)} />
-        {content.systemLogs.map((item) => (
-          <div key={item._id}>
-            {item.year} - {item.title}
-            <button className="btn ghost" onClick={() => remove('systemLogs', item._id)}>Delete</button>
-          </div>
-        ))}
-      </section>
+      <AdminCard title="Experience">
+        <ExperienceForm onSave={(payload) => save('experience', payload)} />
+        <List items={content.experience} render={(item) => `${item.year} • ${item.title}`} onEdit={(item) => save('experience', item)} onDelete={(id) => remove('experience', id)} />
+      </AdminCard>
+
+      <AdminCard title="Skills">
+        <SkillForm onSave={(payload) => save('skills', payload)} />
+        <List items={content.skills} render={(item) => `${item.category} • ${item.name}`} onEdit={(item) => save('skills', item)} onDelete={(id) => remove('skills', id)} />
+      </AdminCard>
     </main>
   );
 }
 
-function StackForm({ onSave }: { onSave: (payload: unknown) => Promise<void> }) {
-  const submit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    await onSave({
-      category: form.get('category'),
-      name: form.get('name'),
-      level: form.get('level') || undefined,
-      order: Number(form.get('order') || 0)
-    });
-    e.currentTarget.reset();
-  };
+function AdminCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return <section className="space-y-4 rounded-2xl border border-primary/10 bg-white p-6 shadow-soft"><h2 className="font-heading text-xl">{title}</h2>{children}</section>;
+}
 
+function List<T extends { _id: string }>({ items, render, onDelete, onEdit }: { items: T[]; render: (item: T) => string; onDelete: (id: string) => Promise<void>; onEdit: (item: T) => Promise<void>; }) {
   return (
-    <form className="form-grid" onSubmit={submit}>
-      <input name="category" placeholder="Frontend" required />
-      <input name="name" placeholder="Next.js" required />
-      <input name="level" placeholder="Advanced" />
-      <input name="order" type="number" placeholder="0" />
-      <button className="btn primary" type="submit">Add Stack Item</button>
-    </form>
+    <div className="space-y-2">
+      {items.map((item) => (
+        <div key={item._id} className="flex items-center justify-between rounded-xl border border-primary/10 p-3 text-sm">
+          <span>{render(item)}</span>
+          <div className="flex gap-2">
+            <button className="rounded-lg border px-3 py-1" onClick={() => onEdit(item)}>Quick Save</button>
+            <button className="rounded-lg border px-3 py-1" onClick={() => onDelete(item._id)}>Delete</button>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 
-function LogForm({ onSave }: { onSave: (payload: unknown) => Promise<void> }) {
-  const submit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    await onSave({
-      year: Number(form.get('year')),
-      title: form.get('title'),
-      details: form.get('details'),
-      order: Number(form.get('order') || 0)
-    });
-    e.currentTarget.reset();
-  };
-
-  return (
-    <form className="form-grid" onSubmit={submit}>
-      <input name="year" type="number" placeholder="2026" required />
-      <input name="title" placeholder="Built portfolio v2" required />
-      <textarea name="details" placeholder="System update details" required />
-      <input name="order" type="number" placeholder="0" />
-      <button className="btn primary" type="submit">Add Log</button>
-    </form>
-  );
-}
-
-function RegistryForm({
-  onSave,
-  onUpload
-}: {
-  onSave: (payload: unknown) => Promise<void>;
-  onUpload: (file: File) => Promise<{ storageId: string }>; 
-}) {
+function ProjectForm({ onSave, onUpload }: { onSave: (payload: Partial<Project>) => Promise<void>; onUpload: (file: File) => Promise<{ storageId: string }>; }) {
   const [uploading, setUploading] = useState(false);
-
-  const submit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    let storageId: string | undefined;
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
     const file = form.get('image') as File;
-
+    let imageId = String(form.get('imageId') ?? '');
     if (file?.size) {
       setUploading(true);
-      const result = await onUpload(file);
-      storageId = result.storageId;
+      const upload = await onUpload(file);
+      imageId = upload.storageId;
       setUploading(false);
     }
 
     await onSave({
-      title: form.get('title'),
-      summary: form.get('summary'),
-      tags: String(form.get('tags') ?? '')
-        .split(',')
-        .map((tag) => tag.trim())
-        .filter(Boolean),
-      liveUrl: form.get('liveUrl') || undefined,
-      sourceUrl: form.get('sourceUrl') || undefined,
-      imageStorageId: storageId,
-      imageUrl: form.get('imageUrl') || undefined,
-      featured: form.get('featured') === 'on',
-      order: Number(form.get('order') || 0)
+      id: String(form.get('id') || '') || undefined,
+      title: String(form.get('title')),
+      description: String(form.get('description')),
+      techStack: String(form.get('techStack')).split(',').map((s) => s.trim()).filter(Boolean),
+      imageId,
+      liveUrl: String(form.get('liveUrl') || '') || undefined,
+      githubUrl: String(form.get('githubUrl') || '') || undefined,
+      featured: form.get('featured') === 'on'
     });
-    e.currentTarget.reset();
+    event.currentTarget.reset();
   };
 
   return (
-    <form className="form-grid" onSubmit={submit}>
-      <input name="title" placeholder="Project name" required />
-      <textarea name="summary" placeholder="Project summary" required />
-      <input name="tags" placeholder="Next.js, Convex, Tailwind" required />
-      <input name="liveUrl" placeholder="https://project.live" />
-      <input name="sourceUrl" placeholder="https://github.com/..." />
-      <input name="imageUrl" placeholder="Optional direct image URL" />
-      <input name="image" type="file" accept="image/*" />
-      <label><input name="featured" type="checkbox" /> Featured</label>
-      <input name="order" type="number" placeholder="0" />
-      <button className="btn primary" type="submit" disabled={uploading}>{uploading ? 'Uploading...' : 'Add Registry Item'}</button>
+    <form onSubmit={submit} className="grid gap-2">
+      <input name="id" placeholder="Project ID (for edit)" className="rounded-xl border border-primary/20 px-3 py-2" />
+      <input name="title" required placeholder="Title" className="rounded-xl border border-primary/20 px-3 py-2" />
+      <textarea name="description" required placeholder="Description" className="rounded-xl border border-primary/20 px-3 py-2" />
+      <input name="techStack" required placeholder="Next.js, Convex, Tailwind" className="rounded-xl border border-primary/20 px-3 py-2" />
+      <input name="imageId" placeholder="Existing imageId (optional if uploading)" className="rounded-xl border border-primary/20 px-3 py-2" />
+      <input name="image" type="file" accept="image/*" className="rounded-xl border border-primary/20 px-3 py-2" />
+      <input name="liveUrl" placeholder="Live URL" className="rounded-xl border border-primary/20 px-3 py-2" />
+      <input name="githubUrl" placeholder="GitHub URL" className="rounded-xl border border-primary/20 px-3 py-2" />
+      <label className="text-sm"><input name="featured" type="checkbox" className="mr-2" />Featured</label>
+      <button disabled={uploading} className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">{uploading ? 'Uploading...' : 'Save Project'}</button>
+    </form>
+  );
+}
+
+function ServiceForm({ onSave }: { onSave: (payload: Partial<Service>) => Promise<void> }) {
+  return <SimpleForm fields={['id', 'title', 'description', 'icon']} onSave={onSave} buttonLabel="Save Service" />;
+}
+
+function ExperienceForm({ onSave }: { onSave: (payload: Partial<Experience>) => Promise<void> }) {
+  return <SimpleForm fields={['id', 'year', 'title', 'description', 'order']} onSave={(payload) => onSave({ ...payload, order: Number(payload.order ?? 0) })} buttonLabel="Save Experience" />;
+}
+
+function SkillForm({ onSave }: { onSave: (payload: Partial<Skill>) => Promise<void> }) {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    await onSave({
+      id: String(form.get('id') || '') || undefined,
+      category: form.get('category') as SkillCategory,
+      name: String(form.get('name'))
+    });
+    event.currentTarget.reset();
+  };
+
+  return (
+    <form onSubmit={submit} className="grid gap-2">
+      <input name="id" placeholder="Skill ID (for edit)" className="rounded-xl border border-primary/20 px-3 py-2" />
+      <select name="category" className="rounded-xl border border-primary/20 px-3 py-2">
+        <option value="frontend">frontend</option>
+        <option value="backend">backend</option>
+        <option value="mobile">mobile</option>
+        <option value="cloud">cloud</option>
+      </select>
+      <input name="name" required placeholder="Skill name" className="rounded-xl border border-primary/20 px-3 py-2" />
+      <button className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">Save Skill</button>
+    </form>
+  );
+}
+
+function SimpleForm({ fields, onSave, buttonLabel }: { fields: string[]; onSave: (payload: any) => Promise<void>; buttonLabel: string; }) {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const payload = Object.fromEntries(fields.map((field) => [field, form.get(field)]));
+    await onSave(payload);
+    event.currentTarget.reset();
+  };
+
+  return (
+    <form onSubmit={submit} className="grid gap-2">
+      {fields.map((field) => (
+        <input key={field} name={field} placeholder={field} className="rounded-xl border border-primary/20 px-3 py-2" required={field !== 'id'} />
+      ))}
+      <button className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">{buttonLabel}</button>
     </form>
   );
 }

@@ -1,49 +1,28 @@
-# Daniel Portfolio (Next.js + Convex)
+# Daniel Agbeni Portfolio (Next.js + Convex)
 
-Portfolio website inspired by the SYS_ARCHITECT design and backed by Convex.
+Production-ready one-page portfolio with a tech-focused UI and Convex-backed CMS.
 
-## Features
+## Stack
 
-- Public portfolio homepage matching the provided visual direction.
-- Convex database schema for:
-  - `stackMatrix`
-  - `registry`
-  - `systemLogs`
-- Registry storage bucket support via Convex file uploads.
-- `/admin` console with login protection (email-restricted to `danielagbeni12@gmail.com`) for dynamic updates.
+- Next.js App Router + TypeScript
+- Tailwind CSS + Framer Motion
+- Convex (data tables, file storage, and mutations)
+- NextAuth protected `/admin`
 
-## Setup
+## Convex Tables
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-2. Copy env:
-   ```bash
-   cp .env.example .env.local
-   ```
-3. Fill values in `.env.local`.
-4. Run Convex dev in another terminal:
-   ```bash
-   npx convex dev
-   ```
-5. Start Next app:
-   ```bash
-   npm run dev
-   ```
+- `projects`
+- `services`
+- `experience`
+- `skills`
+- `contacts`
 
-## Admin Access
+## Run locally
 
-- Visit `/admin/login`.
-- Authenticate using:
-  - email: `danielagbeni12@gmail.com`
-  - password: `ADMIN_PASSWORD`
+```bash
+npm install
+npx convex dev
+npm run dev
+```
 
-## Convex notes
-
-Convex functions are in `/convex`:
-
-- `stackMatrix.js`
-- `registry.js`
-- `systemLogs.js`
-- `schema.ts`
+Set `NEXT_PUBLIC_CONVEX_URL`, `ADMIN_EMAIL`, and `ADMIN_PASSWORD` in `.env.local`.

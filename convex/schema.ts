@@ -2,30 +2,37 @@ import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
 
 export default defineSchema({
-  stackMatrix: defineTable({
-    category: v.string(),
-    name: v.string(),
-    level: v.optional(v.string()),
-    order: v.number(),
-    updatedAt: v.number()
-  }).index('by_category', ['category']),
-  registry: defineTable({
+  projects: defineTable({
     title: v.string(),
-    summary: v.string(),
-    tags: v.array(v.string()),
+    description: v.string(),
+    techStack: v.array(v.string()),
+    imageId: v.id('_storage'),
     liveUrl: v.optional(v.string()),
-    sourceUrl: v.optional(v.string()),
-    imageStorageId: v.optional(v.id('_storage')),
-    imageUrl: v.optional(v.string()),
+    githubUrl: v.optional(v.string()),
     featured: v.boolean(),
-    order: v.number(),
-    updatedAt: v.number()
-  }).index('by_featured', ['featured']),
-  systemLogs: defineTable({
-    year: v.number(),
+    createdAt: v.number()
+  })
+    .index('by_featured', ['featured'])
+    .index('by_created_at', ['createdAt']),
+  services: defineTable({
     title: v.string(),
-    details: v.string(),
-    order: v.number(),
-    updatedAt: v.number()
-  }).index('by_year', ['year'])
+    description: v.string(),
+    icon: v.string()
+  }),
+  experience: defineTable({
+    year: v.string(),
+    title: v.string(),
+    description: v.string(),
+    order: v.number()
+  }).index('by_order', ['order']),
+  skills: defineTable({
+    category: v.union(v.literal('frontend'), v.literal('backend'), v.literal('mobile'), v.literal('cloud')),
+    name: v.string()
+  }).index('by_category', ['category']),
+  contacts: defineTable({
+    name: v.string(),
+    email: v.string(),
+    message: v.string(),
+    createdAt: v.number()
+  })
 });
