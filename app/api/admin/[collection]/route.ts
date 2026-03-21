@@ -29,6 +29,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ col
     return Response.json({ error: 'Unknown collection' }, { status: 404 });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result = await convex.mutation(fn.upsert as any, body);
   return Response.json({ ok: true, result });
 }
@@ -46,6 +47,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ c
   }
 
   const { id } = await request.json();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result = await convex.mutation(fn.remove as any, { id });
   return Response.json({ ok: true, result });
 }

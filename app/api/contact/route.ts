@@ -7,6 +7,7 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Invalid payload' }, { status: 400 });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await convex.mutation('contact:create' as any, {
     name: body.name,
     email: body.email,
