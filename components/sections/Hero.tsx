@@ -7,7 +7,7 @@ const TerminalPanel = dynamic(() => import('./TerminalPanel').then((mod) => mod.
 
 export function Hero() {
   return (
-    <section className="grid gap-8 py-16 md:grid-cols-2 md:items-center">
+    <section id="hero" aria-label="Introduction" className="grid gap-8 py-16 md:grid-cols-2 md:items-center">
       <div>
         <p className="mb-3 inline-flex rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary">
           STATUS: BUILDING RELIABLE SYSTEMS
