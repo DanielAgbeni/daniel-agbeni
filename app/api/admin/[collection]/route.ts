@@ -1,20 +1,22 @@
 import { auth } from '@/lib/auth';
 import { convex } from '@/lib/convex';
 
-type Collection = 'stackMatrix' | 'registry' | 'systemLogs';
+type Collection = 'projects' | 'services' | 'experience' | 'skills';
 
 const collectionMap: Record<Collection, { upsert: string; remove: string }> = {
-  stackMatrix: { upsert: 'stackMatrix:upsert', remove: 'stackMatrix:remove' },
-  registry: { upsert: 'registry:upsert', remove: 'registry:remove' },
-  systemLogs: { upsert: 'systemLogs:upsert', remove: 'systemLogs:remove' }
+  projects: { upsert: 'projects:upsert', remove: 'projects:remove' },
+  services: { upsert: 'services:upsert', remove: 'services:remove' },
+  experience: { upsert: 'experience:upsert', remove: 'experience:remove' },
+  skills: { upsert: 'skills:upsert', remove: 'skills:remove' }
 };
 
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ collection: Collection }> }
-) {
+async function isAuthorized() {
   const session = await auth();
-  if (!session?.user?.email) {
+  return session?.user?.email === 'danielagbeni12@gmail.com';
+}
+
+export async function POST(request: Request, { params }: { params: Promise<{ collection: Collection }> }) {
+  if (!(await isAuthorized())) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -30,12 +32,8 @@ export async function POST(
   return Response.json({ ok: true, result });
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ collection: Collection }> }
-) {
-  const session = await auth();
-  if (!session?.user?.email) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ collection: Collection }> }) {
+  if (!(await isAuthorized())) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -47,6 +45,5 @@ export async function DELETE(
 
   const { id } = await request.json();
   const result = await convex.mutation(fn.remove, { id });
-
   return Response.json({ ok: true, result });
 }

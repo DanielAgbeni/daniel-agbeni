@@ -1,15 +1,19 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import { Inter, Space_Grotesk } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const heading = Space_Grotesk({ subsets: ['latin'], variable: '--font-heading' });
 
 export const metadata: Metadata = {
-  title: 'SYS_ARCHITECT_v1.0 // Daniel Portfolio',
-  description: 'Daniel Agbeni portfolio with Convex powered admin CMS.'
+  title: 'Daniel Agbeni | Full-Stack Portfolio',
+  description: 'Production-grade full-stack and mobile engineering portfolio powered by Next.js and Convex.'
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={`${inter.variable} ${heading.variable} bg-background text-text`}>{children}</body>
     </html>
   );
 }
