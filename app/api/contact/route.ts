@@ -7,7 +7,7 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Invalid payload' }, { status: 400 });
   }
 
-  await convex.mutation('contact:create', {
+  await convex.mutation('contact:create' as any, {
     name: body.name,
     email: body.email,
     message: body.message

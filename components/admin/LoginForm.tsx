@@ -16,10 +16,13 @@ export default function LoginForm() {
         const result = await signIn('credentials', {
           email,
           password,
-          redirect: true,
-          callbackUrl: '/admin'
+          redirect: false,
         });
-        if (result?.error) setError('Invalid credentials');
+        if (result?.error) {
+          setError('Invalid credentials');
+        } else if (result?.ok) {
+          window.location.href = '/admin';
+        }
       }}
     >
       <h1 className="font-heading text-2xl font-bold">Admin Login</h1>

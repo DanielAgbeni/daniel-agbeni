@@ -1,7 +1,7 @@
 'use client';
 
 import { signOut } from 'next-auth/react';
-import { FormEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -113,28 +113,29 @@ function List<T extends { _id: string }>({ items, render, onDelete }: { items: T
 // Zod schemas with empty string transforming to undefined for optional Convex IDs
 // This handles the error where passing `id: "1"` or `""` violates Convex v.id()
 const transformId = (val: string) => val.trim() === '' ? undefined : val;
+const convexIdSchema = z.string().transform(transformId).pipe(z.string().min(20, "Invalid Convex ID. Leave completely blank to create new.").optional());
 
 const projectSchema = z.object({
-  id: z.string().transform(transformId).optional(),
+  id: convexIdSchema,
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   techStack: z.string().min(1, "Tech stack is required. Separate by comma."),
   imageId: z.string().optional(),
   liveUrl: z.string().transform(transformId).optional(),
   githubUrl: z.string().transform(transformId).optional(),
-  featured: z.boolean().default(false)
+  featured: z.boolean()
 });
 
 type ProjectFormData = z.infer<typeof projectSchema>;
 
-function ProjectForm({ onSave, onUpload }: { onSave: (payload: Partial<Project>) => Promise<void>; onUpload: (file: File) => Promise<{ storageId: string }>; }) {
+function ProjectForm({ onSave, onUpload }: { onSave: (payload: any) => Promise<void>; onUpload: (file: File) => Promise<{ storageId: string }>; }) {
   const [uploading, setUploading] = useState(false);
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ProjectFormData>({
     resolver: zodResolver(projectSchema),
     defaultValues: { featured: false }
   });
 
-  const onSubmit = async (data: ProjectFormData, event: any) => {
+  const onSubmit = async (data: ProjectFormData, event?: any) => {
     let finalImageId = data.imageId;
     const file = event.target?.image?.files?.[0];
     if (file?.size) {
@@ -213,14 +214,14 @@ function ProjectForm({ onSave, onUpload }: { onSave: (payload: Partial<Project>)
 }
 
 const serviceSchema = z.object({
-  id: z.string().transform(transformId).optional(),
+  id: convexIdSchema,
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   icon: z.string().min(1, "Icon name/identifier is required")
 });
 type ServiceFormData = z.infer<typeof serviceSchema>;
 
-function ServiceForm({ onSave }: { onSave: (payload: Partial<Service>) => Promise<void> }) {
+function ServiceForm({ onSave }: { onSave: (payload: any) => Promise<void> }) {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ServiceFormData>({ resolver: zodResolver(serviceSchema) });
 
   const onSubmit = async (data: ServiceFormData) => {
@@ -253,16 +254,19 @@ function ServiceForm({ onSave }: { onSave: (payload: Partial<Service>) => Promis
 }
 
 const expSchema = z.object({
-  id: z.string().transform(transformId).optional(),
+  id: convexIdSchema,
   year: z.string().min(1, "Year is required"),
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
-  order: z.coerce.number().default(0)
+  order: z.string().min(1, "Order is required")
 });
 type ExpFormData = z.infer<typeof expSchema>;
 
-function ExperienceForm({ onSave }: { onSave: (payload: Partial<Experience>) => Promise<void> }) {
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<ExpFormData>({ resolver: zodResolver(expSchema) });
+function ExperienceForm({ onSave }: { onSave: (payload: any) => Promise<void> }) {
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<ExpFormData>({ 
+    resolver: zodResolver(expSchema),
+    defaultValues: { order: "0" }
+  });
 
   const onSubmit = async (data: ExpFormData) => {
     await onSave({ ...data, order: Number(data.order) });
@@ -303,7 +307,7 @@ const skillSchema = z.object({
 });
 type SkillFormData = z.infer<typeof skillSchema>;
 
-function SkillForm({ onSave }: { onSave: (payload: Partial<Skill>) => Promise<void> }) {
+function SkillForm({ onSave }: { onSave: (payload: any) => Promise<void> }) {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<SkillFormData>({ resolver: zodResolver(skillSchema) });
 
   const onSubmit = async (data: SkillFormData) => {

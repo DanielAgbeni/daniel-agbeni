@@ -1,0 +1,27 @@
+app/api/admin/[collection]/route.ts(31,40): error TS2345: Argument of type 'string' is not assignable to parameter of type 'FunctionReference<"mutation">'.
+app/api/admin/[collection]/route.ts(47,40): error TS2345: Argument of type 'string' is not assignable to parameter of type 'FunctionReference<"mutation">'.
+app/api/admin/upload/route.ts(10,43): error TS2345: Argument of type 'string' is not assignable to parameter of type 'FunctionReference<"mutation">'.
+app/api/contact/route.ts(10,25): error TS2345: Argument of type 'string' is not assignable to parameter of type 'FunctionReference<"mutation">'.
+components/admin/AdminPanel.tsx(133,5): error TS2322: Type 'Resolver<{ title: string; description: string; techStack: string; id?: string | undefined; imageId?: string | undefined; liveUrl?: string | undefined; githubUrl?: string | undefined; featured?: boolean | undefined; }, any, { ...; }>' is not assignable to type 'Resolver<{ title: string; description: string; techStack: string; featured: boolean; id?: string | undefined; imageId?: string | undefined; liveUrl?: string | undefined; githubUrl?: string | undefined; }, any, { ...; }>'.
+  Types of parameters 'options' and 'options' are incompatible.
+    Type 'ResolverOptions<{ title: string; description: string; techStack: string; featured: boolean; id?: string | undefined; imageId?: string | undefined; liveUrl?: string | undefined; githubUrl?: string | undefined; }>' is not assignable to type 'ResolverOptions<{ title: string; description: string; techStack: string; id?: string | undefined; imageId?: string | undefined; liveUrl?: string | undefined; githubUrl?: string | undefined; featured?: boolean | undefined; }>'.
+      Type 'boolean | undefined' is not assignable to type 'boolean'.
+        Type 'undefined' is not assignable to type 'boolean'.
+components/admin/AdminPanel.tsx(148,7): error TS2353: Object literal may only specify known properties, and 'id' does not exist in type 'Partial<Project>'.
+components/admin/AdminPanel.tsx(161,34): error TS2345: Argument of type '(data: ProjectFormData, event: any) => Promise<void>' is not assignable to parameter of type 'SubmitHandler<TFieldValues>'.
+  Types of parameters 'data' and 'data' are incompatible.
+    Type 'TFieldValues' is not assignable to type '{ title: string; description: string; techStack: string; featured: boolean; id?: string | undefined; imageId?: string | undefined; liveUrl?: string | undefined; githubUrl?: string | undefined; }'.
+      Type 'FieldValues' is missing the following properties from type '{ title: string; description: string; techStack: string; featured: boolean; id?: string | undefined; imageId?: string | undefined; liveUrl?: string | undefined; githubUrl?: string | undefined; }': title, description, techStack, featured
+components/admin/AdminPanel.tsx(265,91): error TS2322: Type 'Resolver<{ year: string; title: string; description: string; id?: string | undefined; order?: unknown; }, any, { year: string; title: string; description: string; order: number; id?: string | undefined; }>' is not assignable to type 'Resolver<{ year: string; title: string; description: string; order: number; id?: string | undefined; }, any, { year: string; title: string; description: string; order: number; id?: string | undefined; }>'.
+  Types of parameters 'options' and 'options' are incompatible.
+    Type 'ResolverOptions<{ year: string; title: string; description: string; order: number; id?: string | undefined; }>' is not assignable to type 'ResolverOptions<{ year: string; title: string; description: string; id?: string | undefined; order?: unknown; }>'.
+      Type 'unknown' is not assignable to type 'number'.
+components/admin/AdminPanel.tsx(273,34): error TS2345: Argument of type '(data: ExpFormData) => Promise<void>' is not assignable to parameter of type 'SubmitHandler<TFieldValues>'.
+  Types of parameters 'data' and 'data' are incompatible.
+    Type 'TFieldValues' is not assignable to type '{ year: string; title: string; description: string; order: number; id?: string | undefined; }'.
+      Type 'FieldValues' is missing the following properties from type '{ year: string; title: string; description: string; order: number; id?: string | undefined; }': year, title, description, order
+components/admin/LoginForm.tsx(22,21): error TS2339: Property 'error' does not exist on type 'never'.
+lib/portfolio.ts(7,20): error TS2345: Argument of type 'string' is not assignable to parameter of type 'FunctionReference<"query">'.
+lib/portfolio.ts(8,20): error TS2345: Argument of type 'string' is not assignable to parameter of type 'FunctionReference<"query">'.
+lib/portfolio.ts(9,20): error TS2345: Argument of type 'string' is not assignable to parameter of type 'FunctionReference<"query">'.
+lib/portfolio.ts(10,20): error TS2345: Argument of type 'string' is not assignable to parameter of type 'FunctionReference<"query">'.
