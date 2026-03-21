@@ -15,14 +15,15 @@ async function isAuthorized() {
   return session?.user?.email === 'danielagbeni12@gmail.com';
 }
 
-export async function POST(request: Request, { params }: { params: Promise<{ collection: Collection }> }) {
+export async function POST(request: Request, { params }: { params: Promise<{ collection: string }> }) {
   if (!(await isAuthorized())) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { collection } = await params;
+  const collectionName = collection as Collection;
   const body = await request.json();
-  const fn = collectionMap[collection];
+  const fn = collectionMap[collectionName];
 
   if (!fn) {
     return Response.json({ error: 'Unknown collection' }, { status: 404 });
@@ -32,13 +33,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ col
   return Response.json({ ok: true, result });
 }
 
-export async function DELETE(request: Request, { params }: { params: Promise<{ collection: Collection }> }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ collection: string }> }) {
   if (!(await isAuthorized())) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { collection } = await params;
-  const fn = collectionMap[collection];
+  const collectionName = collection as Collection;
+  const fn = collectionMap[collectionName];
   if (!fn) {
     return Response.json({ error: 'Unknown collection' }, { status: 404 });
   }

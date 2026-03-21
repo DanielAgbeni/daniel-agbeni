@@ -1,0 +1,40 @@
+.next/types/validator.ts(81,31): error TS2344: Type 'typeof import("C:/Users/Daniel/Documents/Projects/daniel new site/daniel-agbeni/app/api/admin/[collection]/route")' does not satisfy the constraint 'RouteHandlerConfig<"/api/admin/[collection]">'.
+  Types of property 'POST' are incompatible.
+    Type '(request: Request, { params }: { params: Promise<{ collection: Collection; }>; }) => Promise<Response>' is not assignable to type '(request: NextRequest, context: { params: Promise<{ collection: string; }>; }) => void | Response | Promise<void | Response>'.
+      Types of parameters '__1' and 'context' are incompatible.
+        Type '{ params: Promise<{ collection: string; }>; }' is not assignable to type '{ params: Promise<{ collection: Collection; }>; }'.
+          Types of property 'params' are incompatible.
+            Type 'Promise<{ collection: string; }>' is not assignable to type 'Promise<{ collection: Collection; }>'.
+              Type '{ collection: string; }' is not assignable to type '{ collection: Collection; }'.
+                Types of property 'collection' are incompatible.
+                  Type 'string' is not assignable to type 'Collection'.
+components/admin/AdminPanel.tsx(134,5): error TS2322: Type 'Resolver<{ id: string; title: string; description: string; techStack: string; featured: boolean; imageId?: string | undefined; liveUrl?: string | undefined; githubUrl?: string | undefined; }, any, { ...; }>' is not assignable to type 'Resolver<{ title: string; description: string; techStack: string; featured: boolean; id?: string | undefined; imageId?: string | undefined; liveUrl?: string | undefined; githubUrl?: string | undefined; }, any, { ...; }>'.
+  Types of parameters 'values' and 'values' are incompatible.
+    Type '{ title: string; description: string; techStack: string; featured: boolean; id?: string | undefined; imageId?: string | undefined; liveUrl?: string | undefined; githubUrl?: string | undefined; }' is not assignable to type '{ id: string; title: string; description: string; techStack: string; featured: boolean; imageId?: string | undefined; liveUrl?: string | undefined; githubUrl?: string | undefined; }'.
+      Types of property 'id' are incompatible.
+        Type 'string | undefined' is not assignable to type 'string'.
+          Type 'undefined' is not assignable to type 'string'.
+components/admin/AdminPanel.tsx(162,34): error TS2345: Argument of type '(data: ProjectFormData, event?: any) => Promise<void>' is not assignable to parameter of type 'SubmitHandler<TFieldValues>'.
+  Types of parameters 'data' and 'data' are incompatible.
+    Type 'TFieldValues' is not assignable to type '{ title: string; description: string; techStack: string; featured: boolean; id?: string | undefined; imageId?: string | undefined; liveUrl?: string | undefined; githubUrl?: string | undefined; }'.
+      Type 'FieldValues' is missing the following properties from type '{ title: string; description: string; techStack: string; featured: boolean; id?: string | undefined; imageId?: string | undefined; liveUrl?: string | undefined; githubUrl?: string | undefined; }': title, description, techStack, featured
+components/admin/AdminPanel.tsx(225,95): error TS2322: Type 'Resolver<{ id: string; title: string; description: string; icon: string; }, any, { title: string; description: string; icon: string; id?: string | undefined; }>' is not assignable to type 'Resolver<{ title: string; description: string; icon: string; id?: string | undefined; }, any, { title: string; description: string; icon: string; id?: string | undefined; }>'.
+  Types of parameters 'values' and 'values' are incompatible.
+    Type '{ title: string; description: string; icon: string; id?: string | undefined; }' is not assignable to type '{ id: string; title: string; description: string; icon: string; }'.
+      Types of property 'id' are incompatible.
+        Type 'string | undefined' is not assignable to type 'string'.
+          Type 'undefined' is not assignable to type 'string'.
+components/admin/AdminPanel.tsx(233,34): error TS2345: Argument of type '(data: ServiceFormData) => Promise<void>' is not assignable to parameter of type 'SubmitHandler<TFieldValues>'.
+  Types of parameters 'data' and 'data' are incompatible.
+    Type 'TFieldValues' is not assignable to type '{ title: string; description: string; icon: string; id?: string | undefined; }'.
+      Type 'FieldValues' is missing the following properties from type '{ title: string; description: string; icon: string; id?: string | undefined; }': title, description, icon
+components/admin/AdminPanel.tsx(267,5): error TS2322: Type 'Resolver<{ id: string; year: string; title: string; description: string; order: string; }, any, { year: string; title: string; description: string; order: string; id?: string | undefined; }>' is not assignable to type 'Resolver<{ year: string; title: string; description: string; order: string; id?: string | undefined; }, any, { year: string; title: string; description: string; order: string; id?: string | undefined; }>'.
+  Types of parameters 'values' and 'values' are incompatible.
+    Type '{ year: string; title: string; description: string; order: string; id?: string | undefined; }' is not assignable to type '{ id: string; year: string; title: string; description: string; order: string; }'.
+      Types of property 'id' are incompatible.
+        Type 'string | undefined' is not assignable to type 'string'.
+          Type 'undefined' is not assignable to type 'string'.
+components/admin/AdminPanel.tsx(277,34): error TS2345: Argument of type '(data: ExpFormData) => Promise<void>' is not assignable to parameter of type 'SubmitHandler<TFieldValues>'.
+  Types of parameters 'data' and 'data' are incompatible.
+    Type 'TFieldValues' is not assignable to type '{ year: string; title: string; description: string; order: string; id?: string | undefined; }'.
+      Type 'FieldValues' is missing the following properties from type '{ year: string; title: string; description: string; order: string; id?: string | undefined; }': year, title, description, order

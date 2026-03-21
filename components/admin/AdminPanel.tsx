@@ -59,7 +59,16 @@ export default function AdminPanel() {
 
       <AdminCard title="Projects">
         <ProjectForm onSave={(payload) => save('projects', payload)} onUpload={uploadImage} />
-        <List items={content.projects} render={(item) => `${item.title} ${item.featured ? '• featured' : ''}`} onDelete={(id) => remove('projects', id)} />
+        <List items={content.projects} render={(item) => (
+          <div className="flex items-center gap-4">
+            {item.imageUrl ? (
+              <img src={item.imageUrl} alt="" className="w-12 h-12 rounded object-cover border border-primary/20 bg-primary/5" />
+            ) : (
+              <div className="w-12 h-12 rounded border border-primary/10 bg-primary/5 flex items-center justify-center text-[10px] text-text/40 font-medium tracking-wider">NONE</div>
+            )}
+            <span className="font-medium text-text/90">{item.title} <span className="text-primary/70">{item.featured ? '• featured' : ''}</span></span>
+          </div>
+        )} onDelete={(id) => remove('projects', id)} />
       </AdminCard>
 
       <AdminCard title="Services">
@@ -90,7 +99,7 @@ function AdminCard({ title, children }: { title: string; children: React.ReactNo
 }
 
 // We dropped the Quick Save for now because triggering save with a partial object bypasses Form Validation and causes ID issues if mis-copied
-function List<T extends { _id: string }>({ items, render, onDelete }: { items: T[]; render: (item: T) => string; onDelete: (id: string) => Promise<void>; }) {
+function List<T extends { _id: string }>({ items, render, onDelete }: { items: T[]; render: (item: T) => React.ReactNode; onDelete: (id: string) => Promise<void>; }) {
   return (
     <div className="space-y-3 mt-6 border-t border-primary/10 pt-6">
       <h3 className="font-semibold text-lg text-text/80 mb-2">Existing Items</h3>
@@ -113,10 +122,10 @@ function List<T extends { _id: string }>({ items, render, onDelete }: { items: T
 // Zod schemas with empty string transforming to undefined for optional Convex IDs
 // This handles the error where passing `id: "1"` or `""` violates Convex v.id()
 const transformId = (val: string) => val.trim() === '' ? undefined : val;
-const convexIdSchema = z.string().transform(transformId).pipe(z.string().min(20, "Invalid Convex ID. Leave completely blank to create new.").optional());
+const convexIdBase = z.string().optional().transform(val => (val && val.trim() !== '') ? val : undefined).refine(val => !val || val.length >= 20, "Invalid Convex ID. Leave completely blank to create new.");
 
 const projectSchema = z.object({
-  id: convexIdSchema,
+  id: convexIdBase.optional(),
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   techStack: z.string().min(1, "Tech stack is required. Separate by comma."),
@@ -130,6 +139,7 @@ type ProjectFormData = z.infer<typeof projectSchema>;
 
 function ProjectForm({ onSave, onUpload }: { onSave: (payload: any) => Promise<void>; onUpload: (file: File) => Promise<{ storageId: string }>; }) {
   const [uploading, setUploading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ProjectFormData>({
     resolver: zodResolver(projectSchema),
     defaultValues: { featured: false }
@@ -155,6 +165,7 @@ function ProjectForm({ onSave, onUpload }: { onSave: (payload: any) => Promise<v
       githubUrl: data.githubUrl,
       featured: data.featured
     });
+    setImagePreview(null);
     reset();
   };
 
@@ -186,7 +197,17 @@ function ProjectForm({ onSave, onUpload }: { onSave: (payload: any) => Promise<v
 
       <div className="col-span-full sm:col-span-1">
         <label className="text-xs font-semibold text-text/60 mb-1 block">Upload New Image (Optional)</label>
-        <input name="image" type="file" accept="image/*" className="w-full rounded-xl border border-primary/20 px-4 py-2 outline-none focus:border-primary text-sm bg-white" />
+        <input name="image" type="file" onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) setImagePreview(URL.createObjectURL(file));
+          else setImagePreview(null);
+        }} accept="image/*" className="w-full rounded-xl border border-primary/20 px-4 py-2 outline-none focus:border-primary text-sm bg-white" />
+        {imagePreview && (
+          <div className="mt-3">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-text/40 mb-1.5 block">Preview</span>
+            <img src={imagePreview} alt="Preview" className="h-24 w-auto object-cover rounded-lg border border-primary/20 shadow-sm" />
+          </div>
+        )}
       </div>
 
       <div className="col-span-full sm:col-span-1 pt-0 sm:pt-4">
@@ -214,7 +235,7 @@ function ProjectForm({ onSave, onUpload }: { onSave: (payload: any) => Promise<v
 }
 
 const serviceSchema = z.object({
-  id: convexIdSchema,
+  id: convexIdBase.optional(),
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   icon: z.string().min(1, "Icon name/identifier is required")
@@ -254,7 +275,7 @@ function ServiceForm({ onSave }: { onSave: (payload: any) => Promise<void> }) {
 }
 
 const expSchema = z.object({
-  id: convexIdSchema,
+  id: convexIdBase.optional(),
   year: z.string().min(1, "Year is required"),
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
