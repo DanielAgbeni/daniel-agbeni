@@ -2,6 +2,9 @@
 
 import { signOut } from 'next-auth/react';
 import { FormEvent, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import type { Experience, PortfolioContent, Project, Service, Skill, SkillCategory } from '@/lib/types';
 
 const initialState: PortfolioContent = { projects: [], services: [], experience: [], skills: [] };
@@ -51,45 +54,55 @@ export default function AdminPanel() {
     <main className="mx-auto max-w-6xl space-y-8 px-6 py-10">
       <div className="flex items-center justify-between">
         <h1 className="font-heading text-3xl font-bold">Admin Dashboard</h1>
-        <button className="rounded-xl border border-primary/20 px-4 py-2 text-sm" onClick={() => signOut({ callbackUrl: '/admin/login' })}>Sign out</button>
+        <button className="rounded-xl border border-primary/20 px-4 py-2 text-sm transition hover:bg-primary/10 font-medium" onClick={() => signOut({ callbackUrl: '/admin/login' })}>Sign out</button>
       </div>
 
       <AdminCard title="Projects">
         <ProjectForm onSave={(payload) => save('projects', payload)} onUpload={uploadImage} />
-        <List items={content.projects} render={(item) => `${item.title} ${item.featured ? '• featured' : ''}`} onEdit={(item) => save('projects', item)} onDelete={(id) => remove('projects', id)} />
+        <List items={content.projects} render={(item) => `${item.title} ${item.featured ? '• featured' : ''}`} onDelete={(id) => remove('projects', id)} />
       </AdminCard>
 
       <AdminCard title="Services">
         <ServiceForm onSave={(payload) => save('services', payload)} />
-        <List items={content.services} render={(item) => item.title} onEdit={(item) => save('services', item)} onDelete={(id) => remove('services', id)} />
+        <List items={content.services} render={(item) => item.title} onDelete={(id) => remove('services', id)} />
       </AdminCard>
 
       <AdminCard title="Experience">
         <ExperienceForm onSave={(payload) => save('experience', payload)} />
-        <List items={content.experience} render={(item) => `${item.year} • ${item.title}`} onEdit={(item) => save('experience', item)} onDelete={(id) => remove('experience', id)} />
+        <List items={content.experience} render={(item) => `${item.year} • ${item.title}`} onDelete={(id) => remove('experience', id)} />
       </AdminCard>
 
       <AdminCard title="Skills">
         <SkillForm onSave={(payload) => save('skills', payload)} />
-        <List items={content.skills} render={(item) => `${item.category} • ${item.name}`} onEdit={(item) => save('skills', item)} onDelete={(id) => remove('skills', id)} />
+        <List items={content.skills} render={(item) => `${item.category} • ${item.name}`} onDelete={(id) => remove('skills', id)} />
       </AdminCard>
     </main>
   );
 }
 
 function AdminCard({ title, children }: { title: string; children: React.ReactNode }) {
-  return <section className="space-y-4 rounded-2xl border border-primary/10 bg-white p-6 shadow-soft"><h2 className="font-heading text-xl">{title}</h2>{children}</section>;
+  return (
+    <section className="space-y-6 rounded-2xl border border-primary/10 bg-white p-6 shadow-sm">
+      <h2 className="font-heading text-2xl font-bold text-primary">{title}</h2>
+      {children}
+    </section>
+  );
 }
 
-function List<T extends { _id: string }>({ items, render, onDelete, onEdit }: { items: T[]; render: (item: T) => string; onDelete: (id: string) => Promise<void>; onEdit: (item: T) => Promise<void>; }) {
+// We dropped the Quick Save for now because triggering save with a partial object bypasses Form Validation and causes ID issues if mis-copied
+function List<T extends { _id: string }>({ items, render, onDelete }: { items: T[]; render: (item: T) => string; onDelete: (id: string) => Promise<void>; }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-3 mt-6 border-t border-primary/10 pt-6">
+      <h3 className="font-semibold text-lg text-text/80 mb-2">Existing Items</h3>
+      {items.length === 0 && <p className="text-sm text-text/50">No items found.</p>}
       {items.map((item) => (
-        <div key={item._id} className="flex items-center justify-between rounded-xl border border-primary/10 p-3 text-sm">
-          <span>{render(item)}</span>
+        <div key={item._id} className="flex flex-wrap gap-2 items-center justify-between rounded-xl border border-primary/10 bg-background/50 p-4 text-sm transition hover:border-primary/30">
+          <div className="flex flex-col gap-1">
+            <span className="font-medium">{render(item)}</span>
+            <span className="text-xs text-text/50 font-mono">ID: {item._id}</span>
+          </div>
           <div className="flex gap-2">
-            <button className="rounded-lg border px-3 py-1" onClick={() => onEdit(item)}>Quick Save</button>
-            <button className="rounded-lg border px-3 py-1" onClick={() => onDelete(item._id)}>Delete</button>
+            <button className="rounded-lg border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 transition whitespace-nowrap" onClick={() => onDelete(item._id)}>Delete</button>
           </div>
         </div>
       ))}
@@ -97,99 +110,228 @@ function List<T extends { _id: string }>({ items, render, onDelete, onEdit }: { 
   );
 }
 
+// Zod schemas with empty string transforming to undefined for optional Convex IDs
+// This handles the error where passing `id: "1"` or `""` violates Convex v.id()
+const transformId = (val: string) => val.trim() === '' ? undefined : val;
+
+const projectSchema = z.object({
+  id: z.string().transform(transformId).optional(),
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  techStack: z.string().min(1, "Tech stack is required. Separate by comma."),
+  imageId: z.string().optional(),
+  liveUrl: z.string().transform(transformId).optional(),
+  githubUrl: z.string().transform(transformId).optional(),
+  featured: z.boolean().default(false)
+});
+
+type ProjectFormData = z.infer<typeof projectSchema>;
+
 function ProjectForm({ onSave, onUpload }: { onSave: (payload: Partial<Project>) => Promise<void>; onUpload: (file: File) => Promise<{ storageId: string }>; }) {
   const [uploading, setUploading] = useState(false);
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    const file = form.get('image') as File;
-    let imageId = String(form.get('imageId') ?? '');
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<ProjectFormData>({
+    resolver: zodResolver(projectSchema),
+    defaultValues: { featured: false }
+  });
+
+  const onSubmit = async (data: ProjectFormData, event: any) => {
+    let finalImageId = data.imageId;
+    const file = event.target?.image?.files?.[0];
     if (file?.size) {
       setUploading(true);
       const upload = await onUpload(file);
-      imageId = upload.storageId;
+      finalImageId = upload.storageId;
       setUploading(false);
     }
 
     await onSave({
-      id: String(form.get('id') || '') || undefined,
-      title: String(form.get('title')),
-      description: String(form.get('description')),
-      techStack: String(form.get('techStack')).split(',').map((s) => s.trim()).filter(Boolean),
-      imageId,
-      liveUrl: String(form.get('liveUrl') || '') || undefined,
-      githubUrl: String(form.get('githubUrl') || '') || undefined,
-      featured: form.get('featured') === 'on'
+      id: data.id,
+      title: data.title,
+      description: data.description,
+      techStack: data.techStack.split(',').map((s) => s.trim()).filter(Boolean),
+      imageId: finalImageId,
+      liveUrl: data.liveUrl,
+      githubUrl: data.githubUrl,
+      featured: data.featured
     });
-    event.currentTarget.reset();
+    reset();
   };
 
   return (
-    <form onSubmit={submit} className="grid gap-2">
-      <input name="id" placeholder="Project ID (for edit)" className="rounded-xl border border-primary/20 px-3 py-2" />
-      <input name="title" required placeholder="Title" className="rounded-xl border border-primary/20 px-3 py-2" />
-      <textarea name="description" required placeholder="Description" className="rounded-xl border border-primary/20 px-3 py-2" />
-      <input name="techStack" required placeholder="Next.js, Convex, Tailwind" className="rounded-xl border border-primary/20 px-3 py-2" />
-      <input name="imageId" placeholder="Existing imageId (optional if uploading)" className="rounded-xl border border-primary/20 px-3 py-2" />
-      <input name="image" type="file" accept="image/*" className="rounded-xl border border-primary/20 px-3 py-2" />
-      <input name="liveUrl" placeholder="Live URL" className="rounded-xl border border-primary/20 px-3 py-2" />
-      <input name="githubUrl" placeholder="GitHub URL" className="rounded-xl border border-primary/20 px-3 py-2" />
-      <label className="text-sm"><input name="featured" type="checkbox" className="mr-2" />Featured</label>
-      <button disabled={uploading} className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">{uploading ? 'Uploading...' : 'Save Project'}</button>
+    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 sm:grid-cols-2">
+      <div className="col-span-full sm:col-span-1">
+        <input {...register('id')} placeholder="Project ID (for edit - leave blank for new)" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary placeholder:text-text/40" />
+        {errors.id && <p className="text-xs text-red-500 mt-1">{errors.id.message}</p>}
+      </div>
+      
+      <div className="col-span-full sm:col-span-1">
+        <input {...register('title')} placeholder="Title *" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary placeholder:text-text/40" />
+        {errors.title && <p className="text-xs text-red-500 mt-1">{errors.title.message}</p>}
+      </div>
+
+      <div className="col-span-full">
+        <textarea {...register('description')} placeholder="Description *" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary min-h-[100px] placeholder:text-text/40" />
+        {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description.message}</p>}
+      </div>
+
+      <div className="col-span-full sm:col-span-1">
+        <input {...register('techStack')} placeholder="Next.js, Tailwind, Convex *" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary placeholder:text-text/40" />
+        {errors.techStack && <p className="text-xs text-red-500 mt-1">{errors.techStack.message}</p>}
+      </div>
+
+      <div className="col-span-full sm:col-span-1">
+        <input {...register('imageId')} placeholder="Existing imageId (optional)" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary placeholder:text-text/40" />
+      </div>
+
+      <div className="col-span-full sm:col-span-1">
+        <label className="text-xs font-semibold text-text/60 mb-1 block">Upload New Image (Optional)</label>
+        <input name="image" type="file" accept="image/*" className="w-full rounded-xl border border-primary/20 px-4 py-2 outline-none focus:border-primary text-sm bg-white" />
+      </div>
+
+      <div className="col-span-full sm:col-span-1 pt-0 sm:pt-4">
+        <input {...register('liveUrl')} placeholder="Live URL (https://...)" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary placeholder:text-text/40" />
+        {errors.liveUrl && <p className="text-xs text-red-500 mt-1">{errors.liveUrl.message}</p>}
+      </div>
+
+      <div className="col-span-full sm:col-span-1">
+        <input {...register('githubUrl')} placeholder="GitHub URL (https://...)" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary placeholder:text-text/40" />
+        {errors.githubUrl && <p className="text-xs text-red-500 mt-1">{errors.githubUrl.message}</p>}
+      </div>
+
+      <div className="col-span-full flex items-center justify-between mt-2 flex-wrap gap-4">
+        <label className="flex items-center gap-2 cursor-pointer text-sm font-medium">
+          <input {...register('featured')} type="checkbox" className="w-4 h-4 rounded border-primary/20 text-primary focus:ring-primary" />
+          Featured Project
+        </label>
+        
+        <button disabled={uploading} className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:opacity-50">
+          {uploading ? 'Uploading...' : 'Save Project'}
+        </button>
+      </div>
     </form>
   );
 }
+
+const serviceSchema = z.object({
+  id: z.string().transform(transformId).optional(),
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  icon: z.string().min(1, "Icon name/identifier is required")
+});
+type ServiceFormData = z.infer<typeof serviceSchema>;
 
 function ServiceForm({ onSave }: { onSave: (payload: Partial<Service>) => Promise<void> }) {
-  return <SimpleForm fields={['id', 'title', 'description', 'icon']} onSave={onSave} buttonLabel="Save Service" />;
-}
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<ServiceFormData>({ resolver: zodResolver(serviceSchema) });
 
-function ExperienceForm({ onSave }: { onSave: (payload: Partial<Experience>) => Promise<void> }) {
-  return <SimpleForm fields={['id', 'year', 'title', 'description', 'order']} onSave={(payload) => onSave({ ...payload, order: Number(payload.order ?? 0) })} buttonLabel="Save Experience" />;
-}
-
-function SkillForm({ onSave }: { onSave: (payload: Partial<Skill>) => Promise<void> }) {
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    await onSave({
-      id: String(form.get('id') || '') || undefined,
-      category: form.get('category') as SkillCategory,
-      name: String(form.get('name'))
-    });
-    event.currentTarget.reset();
+  const onSubmit = async (data: ServiceFormData) => {
+    await onSave(data);
+    reset();
   };
 
   return (
-    <form onSubmit={submit} className="grid gap-2">
-      <input name="id" placeholder="Skill ID (for edit)" className="rounded-xl border border-primary/20 px-3 py-2" />
-      <select name="category" className="rounded-xl border border-primary/20 px-3 py-2">
-        <option value="frontend">frontend</option>
-        <option value="backend">backend</option>
-        <option value="mobile">mobile</option>
-        <option value="cloud">cloud</option>
-      </select>
-      <input name="name" required placeholder="Skill name" className="rounded-xl border border-primary/20 px-3 py-2" />
-      <button className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">Save Skill</button>
+    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 sm:grid-cols-2">
+      <div className="col-span-full sm:col-span-1">
+        <input {...register('id')} placeholder="Service ID (for edit - optional)" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary placeholder:text-text/40" />
+      </div>
+      <div className="col-span-full sm:col-span-1">
+        <input {...register('title')} placeholder="Title *" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary placeholder:text-text/40" />
+        {errors.title && <p className="text-xs text-red-500 mt-1">{errors.title.message}</p>}
+      </div>
+      <div className="col-span-full">
+        <textarea {...register('description')} placeholder="Description *" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary min-h-[80px] placeholder:text-text/40" />
+        {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description.message}</p>}
+      </div>
+      <div className="col-span-full sm:col-span-1">
+        <input {...register('icon')} placeholder="Icon name (e.g., Code, Server) *" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary placeholder:text-text/40" />
+        {errors.icon && <p className="text-xs text-red-500 mt-1">{errors.icon.message}</p>}
+      </div>
+      <div className="col-span-full flex justify-end">
+        <button className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90">Save Service</button>
+      </div>
     </form>
   );
 }
 
-function SimpleForm({ fields, onSave, buttonLabel }: { fields: string[]; onSave: (payload: any) => Promise<void>; buttonLabel: string; }) {
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    const payload = Object.fromEntries(fields.map((field) => [field, form.get(field)]));
-    await onSave(payload);
-    event.currentTarget.reset();
+const expSchema = z.object({
+  id: z.string().transform(transformId).optional(),
+  year: z.string().min(1, "Year is required"),
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  order: z.coerce.number().default(0)
+});
+type ExpFormData = z.infer<typeof expSchema>;
+
+function ExperienceForm({ onSave }: { onSave: (payload: Partial<Experience>) => Promise<void> }) {
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<ExpFormData>({ resolver: zodResolver(expSchema) });
+
+  const onSubmit = async (data: ExpFormData) => {
+    await onSave({ ...data, order: Number(data.order) });
+    reset();
   };
 
   return (
-    <form onSubmit={submit} className="grid gap-2">
-      {fields.map((field) => (
-        <input key={field} name={field} placeholder={field} className="rounded-xl border border-primary/20 px-3 py-2" required={field !== 'id'} />
-      ))}
-      <button className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">{buttonLabel}</button>
+    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 sm:grid-cols-2">
+      <div className="col-span-full sm:col-span-1">
+        <input {...register('id')} placeholder="Experience ID (for edit - optional)" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary placeholder:text-text/40" />
+      </div>
+      <div className="col-span-full sm:col-span-1">
+        <input {...register('year')} placeholder="Year (e.g. 2026) *" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary placeholder:text-text/40" />
+        {errors.year && <p className="text-xs text-red-500 mt-1">{errors.year.message}</p>}
+      </div>
+      <div className="col-span-full">
+        <input {...register('title')} placeholder="Job Title / Milestone *" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary placeholder:text-text/40" />
+        {errors.title && <p className="text-xs text-red-500 mt-1">{errors.title.message}</p>}
+      </div>
+      <div className="col-span-full">
+        <textarea {...register('description')} placeholder="Description *" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary min-h-[80px] placeholder:text-text/40" />
+        {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description.message}</p>}
+      </div>
+      <div className="col-span-full sm:col-span-1">
+        <input {...register('order')} type="number" placeholder="Order (0) *" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary placeholder:text-text/40" />
+      </div>
+      <div className="col-span-full flex justify-end">
+        <button className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90">Save Experience</button>
+      </div>
+    </form>
+  );
+}
+
+const skillSchema = z.object({
+  id: z.string().transform(transformId).optional(),
+  category: z.enum(['frontend', 'backend', 'mobile', 'cloud']),
+  name: z.string().min(1, "Skill Name is required")
+});
+type SkillFormData = z.infer<typeof skillSchema>;
+
+function SkillForm({ onSave }: { onSave: (payload: Partial<Skill>) => Promise<void> }) {
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<SkillFormData>({ resolver: zodResolver(skillSchema) });
+
+  const onSubmit = async (data: SkillFormData) => {
+    await onSave(data);
+    reset();
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 sm:grid-cols-2">
+      <div className="col-span-full sm:col-span-1">
+        <input {...register('id')} placeholder="Skill ID (for edit - optional)" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary placeholder:text-text/40" />
+      </div>
+      <div className="col-span-full sm:col-span-1">
+        <select {...register('category')} className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary bg-white">
+          <option value="frontend">Frontend</option>
+          <option value="backend">Backend</option>
+          <option value="mobile">Mobile</option>
+          <option value="cloud">Cloud</option>
+        </select>
+        {errors.category && <p className="text-xs text-red-500 mt-1">{errors.category.message}</p>}
+      </div>
+      <div className="col-span-full">
+        <input {...register('name')} placeholder="Skill Name *" className="w-full rounded-xl border border-primary/20 px-4 py-2.5 outline-none focus:border-primary placeholder:text-text/40" />
+        {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
+      </div>
+      <div className="col-span-full flex justify-end">
+        <button className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90">Save Skill</button>
+      </div>
     </form>
   );
 }

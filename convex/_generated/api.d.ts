@@ -8,9 +8,11 @@
  * @module
  */
 
-import type * as registry from "../registry.js";
-import type * as stackMatrix from "../stackMatrix.js";
-import type * as systemLogs from "../systemLogs.js";
+import type * as contact from "../contact.js";
+import type * as experience from "../experience.js";
+import type * as projects from "../projects.js";
+import type * as services from "../services.js";
+import type * as skills from "../skills.js";
 
 import type {
   ApiFromModules,
@@ -19,9 +21,11 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
-  registry: typeof registry;
-  stackMatrix: typeof stackMatrix;
-  systemLogs: typeof systemLogs;
+  contact: typeof contact;
+  experience: typeof experience;
+  projects: typeof projects;
+  services: typeof services;
+  skills: typeof skills;
 }>;
 
 /**
