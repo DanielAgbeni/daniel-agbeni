@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { } from 'react';
 
 const navItems = [
   ['About', '#about'],
