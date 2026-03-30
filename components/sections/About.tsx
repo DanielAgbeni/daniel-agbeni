@@ -44,7 +44,7 @@ export function About() {
         {/* Left – label + statement */}
         <div>
           <p className="mb-4 font-mono text-xs italic tracking-widest text-primary/70">
-            // BRIEFING_02
+            {`// BRIEFING_02`}
           </p>
           <h2 className="font-heading text-3xl font-bold leading-snug tracking-tight text-text md:text-4xl">
             Engineering digital experiences that bridge the gap between design
