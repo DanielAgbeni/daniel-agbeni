@@ -9,7 +9,7 @@ export function Hero() {
   return (
     <section id="hero" aria-label="Introduction" className="grid gap-8 py-16 md:grid-cols-2 md:items-center">
       <div>
-        <p className="mb-3 inline-flex rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary">
+        <p className="mb-3 inline-flex rounded-full border border-border-line bg-primary/5 px-3 py-1 text-xs font-semibold text-primary">
           STATUS: BUILDING RELIABLE SYSTEMS
         </p>
         <h1 className="font-heading text-4xl font-bold leading-tight text-text md:text-6xl">

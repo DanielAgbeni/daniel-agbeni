@@ -15,7 +15,7 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-border-line bg-background/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <span className="font-heading text-sm font-bold text-primary">daniel.dev/control</span>
+        <span className="font-heading text-sm font-bold text-primary">daniel.agbeni/portfolio</span>
         <nav className="hidden items-center gap-6 text-sm text-text/70 md:flex">
           {navItems.map(([label, href]) => (
             <a key={href} href={href} className="transition hover:text-primary">
