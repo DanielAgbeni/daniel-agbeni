@@ -13,7 +13,7 @@ const LINES = [
 const CHAR_DELAY = 38;   // ms per character
 const LINE_GAP   = 180;  // ms pause between lines
 
-function useTypewriter(active: boolean) {
+function useTypewriter(_active: boolean) {
   const [displayedLines, setDisplayedLines] = useState<string[]>([]);
   const [cursorLine, setCursorLine]         = useState(-1);
 
@@ -65,7 +65,6 @@ function useTypewriter(active: boolean) {
 export function TerminalPanel() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { displayedLines, cursorLine, runAnimation } = useTypewriter(false);
-  const hasRun = useRef(false);
 
   useEffect(() => {
     const el = sectionRef.current;
