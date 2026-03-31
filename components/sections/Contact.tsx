@@ -42,7 +42,7 @@ export function Contact() {
   return (
     <Section id="contact" title="Contact">
       <div className="grid gap-6 md:grid-cols-2">
-        <div className="rounded-2xl border border-primary/10 bg-white p-6 shadow-soft text-sm text-text/80 flex flex-col gap-4">
+        <div className="rounded-2xl border border-border-line bg-surface p-6 shadow-card text-sm text-text/80 flex flex-col gap-4">
           <a href="mailto:danielagbeni@uploaddoc.app" className="flex items-center gap-3 hover:text-primary transition group">
             <Mail className="w-5 h-5 text-primary/70 group-hover:text-primary" />
             <span>Email: <span className="text-primary font-medium">danielagbeni@uploaddoc.app</span></span>
@@ -84,24 +84,24 @@ export function Contact() {
           </a>
         </div>
         
-        <form onSubmit={handleSubmit(onSubmit)} className="rounded-2xl border border-primary/10 bg-white p-6 shadow-soft space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="rounded-2xl border border-border-line bg-surface p-6 shadow-card space-y-4">
           <div>
-            <input {...register('name', { required: 'Name is required' })} placeholder="Name *" className="w-full rounded-xl border border-primary/20 bg-white px-4 py-3 outline-none focus:border-primary placeholder:text-text/40 transition" />
+            <input {...register('name', { required: 'Name is required' })} placeholder="Name *" className="w-full rounded-xl border border-border-line bg-surface px-4 py-3 outline-none focus:border-primary placeholder:text-text/40 text-text transition" />
             {errors.name && <p className="text-xs text-red-500 mt-1.5 px-1">{errors.name.message}</p>}
           </div>
 
           <div>
-            <input {...register('email', { required: 'Email is required', pattern: { value: /^\S+@\S+$/i, message: 'Invalid email' } })} type="email" placeholder="Email *" className="w-full rounded-xl border border-primary/20 bg-white px-4 py-3 outline-none focus:border-primary placeholder:text-text/40 transition" />
+            <input {...register('email', { required: 'Email is required', pattern: { value: /^\S+@\S+$/i, message: 'Invalid email' } })} type="email" placeholder="Email *" className="w-full rounded-xl border border-border-line bg-surface px-4 py-3 outline-none focus:border-primary placeholder:text-text/40 text-text transition" />
             {errors.email && <p className="text-xs text-red-500 mt-1.5 px-1">{errors.email.message}</p>}
           </div>
 
           <div>
-            <input {...register('reason', { required: 'Reason is required' })} placeholder="Reason for contacting *" className="w-full rounded-xl border border-primary/20 bg-white px-4 py-3 outline-none focus:border-primary placeholder:text-text/40 transition" />
+            <input {...register('reason', { required: 'Reason is required' })} placeholder="Reason for contacting *" className="w-full rounded-xl border border-border-line bg-surface px-4 py-3 outline-none focus:border-primary placeholder:text-text/40 text-text transition" />
             {errors.reason && <p className="text-xs text-red-500 mt-1.5 px-1">{errors.reason.message}</p>}
           </div>
 
           <div>
-            <textarea {...register('message', { required: 'Message is required' })} placeholder="Message *" rows={5} className="w-full rounded-xl border border-primary/20 bg-white px-4 py-3 outline-none focus:border-primary placeholder:text-text/40 transition resize-none" />
+            <textarea {...register('message', { required: 'Message is required' })} placeholder="Message *" rows={5} className="w-full rounded-xl border border-border-line bg-surface px-4 py-3 outline-none focus:border-primary placeholder:text-text/40 text-text transition resize-none" />
             {errors.message && <p className="text-xs text-red-500 mt-1.5 px-1">{errors.message.message}</p>}
           </div>
 

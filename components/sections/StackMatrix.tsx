@@ -11,7 +11,7 @@ function StackMatrixComponent({ skills }: { skills: Skill[] }) {
         {categories.map((category) => {
           const items = skills.filter((skill) => skill.category === category);
           return (
-            <article key={category} className="rounded-2xl border border-primary/10 bg-white p-5 shadow-soft">
+            <article key={category} className="rounded-2xl border border-border-line bg-surface p-5 shadow-card">
               <h3 className="mb-3 font-heading text-lg capitalize">{category}</h3>
               <div className="flex flex-wrap gap-2">
                 {items.length ? items.map((item) => (

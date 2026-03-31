@@ -57,7 +57,7 @@ export function About() {
           {highlights.map((item, i) => (
             <motion.div
               key={item.label}
-              className="rounded-2xl border border-primary/5 bg-white p-5 shadow-[0_2px_20px_rgba(72,40,230,0.04)] transition-shadow duration-300 hover:shadow-[0_4px_30px_rgba(72,40,230,0.1)]"
+              className="rounded-2xl border border-border-line bg-surface p-5 shadow-card transition-shadow duration-300 hover:shadow-soft"
               initial={{ opacity: 0, y: 14 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

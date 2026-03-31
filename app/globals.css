@@ -8,6 +8,8 @@
   --primary: #4828e6;
   --secondary: #e388f1;
   --accent: #e6ec51;
+  --surface: #ffffff;
+  --border-line: rgba(72, 40, 230, 0.12);
 }
 
 /* Dark mode variables — applied by next-themes via .dark on <html> */
@@ -17,6 +19,8 @@
   --primary: #8b70f5;
   --secondary: #c94ed8;
   --accent: #d4da1e;
+  --surface: #10091e;
+  --border-line: rgba(139, 112, 245, 0.15);
 }
 
 /* System-level fallback (for SSR / no-JS scenarios) */
@@ -27,6 +31,8 @@
     --primary: #8b70f5;
     --secondary: #c94ed8;
     --accent: #d4da1e;
+    --surface: #10091e;
+    --border-line: rgba(139, 112, 245, 0.15);
   }
 }
 

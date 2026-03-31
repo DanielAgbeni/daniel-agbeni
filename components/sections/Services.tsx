@@ -21,7 +21,7 @@ export function Services({ services }: { services: Service[] }) {
             key={service._id}
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
-            className="rounded-2xl border border-primary/10 bg-white p-5 shadow-soft"
+            className="rounded-2xl border border-border-line bg-surface p-5 shadow-card"
           >
             <p className="text-2xl">{service.icon}</p>
             <h3 className="mt-3 font-heading text-lg">{service.title}</h3>

@@ -48,7 +48,7 @@ export function Journey({ entries }: { entries: Experience[] }) {
                         {entry.year}
                       </span>
                     ) : (
-                      <div className="w-full max-w-sm rounded-2xl border border-primary/5 bg-white p-6 shadow-[0_2px_20px_rgba(72,40,230,0.06)] transition-shadow duration-300 hover:shadow-[0_4px_30px_rgba(72,40,230,0.1)]">
+                      <div className="w-full max-w-sm rounded-2xl border border-border-line bg-surface p-6 shadow-card transition-shadow duration-300 hover:shadow-soft">
                         <h3 className="mb-2 font-heading text-sm font-bold uppercase tracking-wider text-text">
                           {entry.title}
                         </h3>
@@ -68,7 +68,7 @@ export function Journey({ entries }: { entries: Experience[] }) {
                   {/* Right side */}
                   <div className="flex w-1/2 pl-10">
                     {isEven ? (
-                      <div className="w-full max-w-sm rounded-2xl border border-primary/5 bg-white p-6 shadow-[0_2px_20px_rgba(72,40,230,0.06)] transition-shadow duration-300 hover:shadow-[0_4px_30px_rgba(72,40,230,0.1)]">
+                      <div className="w-full max-w-sm rounded-2xl border border-border-line bg-surface p-6 shadow-card transition-shadow duration-300 hover:shadow-soft">
                         <h3 className="mb-2 font-heading text-sm font-bold uppercase tracking-wider text-text">
                           {entry.title}
                         </h3>
@@ -100,7 +100,7 @@ export function Journey({ entries }: { entries: Experience[] }) {
                     <span className="mb-2 block font-heading text-2xl font-bold tracking-tight text-text/80">
                       {entry.year}
                     </span>
-                    <div className="rounded-2xl border border-primary/5 bg-white p-5 shadow-[0_2px_20px_rgba(72,40,230,0.06)]">
+                    <div className="rounded-2xl border border-border-line bg-surface p-5 shadow-card">
                       <h3 className="mb-1.5 font-heading text-sm font-bold uppercase tracking-wider text-text">
                         {entry.title}
                       </h3>

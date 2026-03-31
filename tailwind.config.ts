@@ -13,10 +13,13 @@ const config: Config = {
         background: 'var(--background)',
         primary: 'var(--primary)',
         secondary: 'var(--secondary)',
-        accent: 'var(--accent)'
+        accent: 'var(--accent)',
+        surface: 'var(--surface)',
+        'border-line': 'var(--border-line)',
       },
       boxShadow: {
-        soft: '0 8px 30px rgba(72, 40, 230, 0.08)'
+        soft: '0 4px 24px rgba(0,0,0,0.12)',
+        card: '0 2px 16px rgba(0,0,0,0.08)',
       },
       borderRadius: {
         panel: '1rem'

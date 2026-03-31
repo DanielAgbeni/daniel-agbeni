@@ -14,7 +14,7 @@ export function Projects({ projects }: { projects: Project[] }) {
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
             key={project._id}
-            className="overflow-hidden rounded-2xl border border-primary/10 bg-white p-4 shadow-soft"
+            className="overflow-hidden rounded-2xl border border-border-line bg-surface p-4 shadow-card"
           >
             {project.imageUrl ? (
               <Image src={project.imageUrl} alt={project.title} width={640} height={360} className="h-52 w-full rounded-xl object-cover" />
