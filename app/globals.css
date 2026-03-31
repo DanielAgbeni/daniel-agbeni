@@ -10,6 +10,26 @@
   --accent: #e6ec51;
 }
 
+/* Dark mode variables — applied by next-themes via .dark on <html> */
+.dark {
+  --text: #ede9fd;
+  --background: #080612;
+  --primary: #8b70f5;
+  --secondary: #c94ed8;
+  --accent: #d4da1e;
+}
+
+/* System-level fallback (for SSR / no-JS scenarios) */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --text: #ede9fd;
+    --background: #080612;
+    --primary: #8b70f5;
+    --secondary: #c94ed8;
+    --accent: #d4da1e;
+  }
+}
+
 html,
 body {
   scroll-behavior: smooth;
