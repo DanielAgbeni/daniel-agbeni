@@ -10,7 +10,7 @@ export default function LoginForm() {
 
   return (
     <form
-      className="mx-auto mt-20 grid w-full max-w-md gap-3 rounded-2xl border border-primary/10 bg-white p-6 shadow-soft"
+      className="mx-auto mt-20 grid w-full max-w-md gap-3 rounded-2xl border border-border-line bg-surface p-6 shadow-soft"
       onSubmit={async (e) => {
         e.preventDefault();
         const result = await signIn('credentials', {
