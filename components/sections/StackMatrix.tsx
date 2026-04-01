@@ -15,7 +15,7 @@ function StackMatrixComponent({ skills }: { skills: Skill[] }) {
               <h3 className="mb-3 font-heading text-lg capitalize">{category}</h3>
               <div className="flex flex-wrap gap-2">
                 {items.length ? items.map((item) => (
-                  <span key={item._id} className="rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium">
+                  <span key={item._id} className="rounded-full border border-border-line bg-primary/5 px-3 py-1 text-xs font-medium">
                     {item.name}
                   </span>
                 )) : <span className="text-sm text-text/50">No skills yet</span>}

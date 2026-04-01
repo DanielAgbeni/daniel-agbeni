@@ -29,7 +29,7 @@ export function Projects({ projects }: { projects: Project[] }) {
               <p className="text-sm text-text/70">{project.description}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {project.techStack.map((tech) => (
-                  <span key={tech} className="rounded-full border border-primary/20 px-2.5 py-1 text-xs">{tech}</span>
+                  <span key={tech} className="rounded-full border border-border-line px-2.5 py-1 text-xs">{tech}</span>
                 ))}
               </div>
               <div className="mt-4 flex gap-3 text-sm">
