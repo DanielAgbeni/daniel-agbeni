@@ -3,6 +3,8 @@
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 
+const loginFieldClass = 'rounded-xl border border-border-line bg-background/70 px-3 py-2 text-text outline-none transition placeholder:text-text/45 focus:border-primary focus:bg-surface focus:ring-2 focus:ring-primary/15';
+
 export default function LoginForm() {
   const [email, setEmail] = useState('danielagbeni12@gmail.com');
   const [password, setPassword] = useState('');
@@ -10,7 +12,7 @@ export default function LoginForm() {
 
   return (
     <form
-      className="mx-auto mt-20 grid w-full max-w-md gap-3 rounded-2xl border border-border-line bg-surface p-6 shadow-soft"
+      className="mx-auto mt-20 grid w-full max-w-md gap-3 rounded-2xl border border-border-line bg-surface p-6 shadow-card"
       onSubmit={async (e) => {
         e.preventDefault();
         const result = await signIn('credentials', {
@@ -27,8 +29,8 @@ export default function LoginForm() {
     >
       <h1 className="font-heading text-2xl font-bold">Admin Login</h1>
       <p className="text-sm text-text/70">Only danielagbeni12@gmail.com can access this area.</p>
-      <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required className="rounded-xl border border-primary/20 px-3 py-2" />
-      <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" required placeholder="Admin password" className="rounded-xl border border-primary/20 px-3 py-2" />
+      <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required className={loginFieldClass} />
+      <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" required placeholder="Admin password" className={loginFieldClass} />
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
       <button className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white" type="submit">Sign in</button>
     </form>
