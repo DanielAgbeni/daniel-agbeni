@@ -6,7 +6,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const heading = Space_Grotesk({ subsets: ['latin'], variable: '--font-heading' });
 
-const SITE_URL = 'https://danielagbeni.uploaddoc.app';
+const SITE_URL = 'https://danielagbeni.algiz.tech';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
 
   description:
-    'Daniel Agbeni is a full-stack and mobile software developer specializing in building production-grade web applications, mobile apps, and scalable cloud systems. Explore projects, skills, and services.',
+    'Daniel Agbeni is a full-stack and mobile software developer specializing in building production-grade web applications, mobile apps, and scalable cloud systems. Explore projects, skills, and [...]
 
   keywords: [
     'Daniel Agbeni',
