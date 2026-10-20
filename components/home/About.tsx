@@ -8,7 +8,7 @@ interface Stat {
 /** Every figure here is taken from the CV or the GARRO benchmark results. */
 const stats: readonly Stat[] = [
   { value: '2023', label: 'Shipping production web and mobile apps since' },
-  { value: '5', label: 'Featured projects across web, mobile, backend and ML' },
+  { value: '6', label: 'Featured projects across web, mobile, backend and ML' },
   { value: '30+', label: 'Developers mentored in production React' },
   { value: '55%', label: 'Lower latency than OSPF in my GARRO routing research' },
 ];

@@ -139,6 +139,30 @@ export const projects: readonly Project[] = [
     keywords: ['freelance platform', 'AI project brief', 'managed project delivery', 'Next.js frontend'],
   },
   {
+    slug: 'algiz-wallet',
+    name: 'Algiz Wallet',
+    tagline: 'Non-custodial smart contract wallet interface',
+    summary:
+      'Frontend web platform for a non-custodial smart contract wallet featuring single-use recovery, zero-trust security flows and responsive design.',
+    overview: [
+      'Algiz is a non-custodial smart contract wallet engineered around single-use recovery: no guardians required, no seed phrases to lose, and cryptographically enforced automatic key rotation.',
+      'I built the frontend web interface, taking technical smart-contract security concepts and structuring them into an intuitive, high-performance web experience.',
+      'Developed with Next.js, TypeScript and Tailwind CSS, focusing on clean visual hierarchy, fast load times, accessible design, and responsive presentation of traditional vs. Algiz recovery mechanics.',
+    ],
+    category: 'Frontend',
+    role: 'Frontend developer',
+    stack: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS'],
+    highlights: [
+      'Built the frontend web presence and product landing application for Algiz Wallet.',
+      'Implemented responsive and accessible UI components explaining cryptographic recovery flows.',
+      'Optimised layout stability, typography and visual performance across all screen sizes.',
+    ],
+    liveUrl: 'https://algiz.tech',
+    image: '/projects/algiz.png',
+    featured: false,
+    keywords: ['Algiz Wallet', 'smart contract wallet', 'non-custodial wallet', 'Next.js frontend', 'cryptographic recovery', 'Web3 UI'],
+  },
+  {
     slug: 'expo-custom-build-server',
     name: 'Expo Custom Build Server',
     tagline: 'Self-hosted build pipeline for Expo apps',

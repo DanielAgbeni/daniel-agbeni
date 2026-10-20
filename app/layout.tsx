@@ -58,6 +58,7 @@ export const metadata: Metadata = {
     'GARRO Graph Attention Routing',
     'UploadDoc',
     'JLance',
+    'Algiz Wallet',
     'Buabed Banafa Perfumes',
     ...allSkills,
   ],

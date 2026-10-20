@@ -39,7 +39,7 @@ export const site = {
 export const socials: readonly SocialProfile[] = [
   { id: 'github', label: 'GitHub', handle: 'DanielAgbeni', url: 'https://github.com/DanielAgbeni', primary: true },
   { id: 'linkedin', label: 'LinkedIn', handle: 'danielagbeni', url: 'https://www.linkedin.com/in/danielagbeni', primary: true },
-  { id: 'x', label: 'X', handle: '@Agbeni_Daniel', url: 'https://x.com/Agbeni_Daniel', primary: false },
+  { id: 'x', label: 'X', handle: '@Agbeni_Daniel', url: 'https://x.com/Agbeni_Daniel', primary: true },
   { id: 'youtube', label: 'YouTube', handle: '@daniel_agbeni', url: 'https://www.youtube.com/@daniel_agbeni', primary: false },
   { id: 'instagram', label: 'Instagram', handle: '@daniel_agbeni', url: 'https://www.instagram.com/daniel_agbeni', primary: false },
   { id: 'threads', label: 'Threads', handle: '@daniel_agbeni', url: 'https://www.threads.com/@daniel_agbeni', primary: false },
