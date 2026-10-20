@@ -50,7 +50,15 @@ export function personNode(): JsonLdNode {
       occupationLocation: { '@type': 'Country', name: 'Nigeria' },
       skills: allSkills.join(', '),
     },
-    sameAs: socials.map((social) => social.url),
+    knowsLanguage: ['en', 'English'],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'recruitment and freelance inquiries',
+      email: site.email,
+      telephone: site.phoneE164,
+      availableLanguage: ['English'],
+    },
+    sameAs: [...socials.map((social) => social.url), `${SITE_URL}/llms.txt`],
   };
 }
 
@@ -78,6 +86,14 @@ function projectNode(project: Project): JsonLdNode {
       '@type': 'SoftwareSourceCode',
       codeRepository: project.repoUrl,
       programmingLanguage: project.stack.filter((tech) => ['Python', 'TypeScript', 'JavaScript'].includes(tech)),
+    };
+  }
+  if (project.liveUrl) {
+    return {
+      ...base,
+      '@type': 'WebApplication',
+      applicationCategory: project.category,
+      operatingSystem: 'All',
     };
   }
   return { ...base, '@type': 'CreativeWork' };

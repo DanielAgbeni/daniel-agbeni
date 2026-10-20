@@ -64,6 +64,10 @@ export const metadata: Metadata = {
   ],
   alternates: {
     canonical: '/',
+    types: {
+      'text/markdown': '/llms.txt',
+      'text/plain': '/llms-full.txt',
+    },
   },
   robots: {
     index: true,
@@ -108,6 +112,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`}>
+      <head>
+        <link rel="alternate" type="text/markdown" href="/llms.txt" title="AI summary for LLMs" />
+        <link rel="alternate" type="text/plain" href="/llms-full.txt" title="Full context for AI" />
+      </head>
       <body className=" flex min-h-[100dvh] flex-col bg-bg font-sans text-fg antialiased">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <a
