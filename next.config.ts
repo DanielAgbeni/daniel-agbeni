@@ -1,18 +1,9 @@
+import path from 'node:path';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**'
-      },
-      {
-        protocol: 'http',
-        hostname: '127.0.0.1'
-      }
-    ]
-  }
+  poweredByHeader: false,
+  outputFileTracingRoot: path.join(__dirname),
 };
 
 export default nextConfig;

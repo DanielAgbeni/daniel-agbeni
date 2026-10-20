@@ -1,20 +1,27 @@
-'use client';
-
-import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
 
-export function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
+interface SectionProps {
+  id: string;
+  title: string;
+  lead?: ReactNode;
+  children: ReactNode;
+  className?: string;
+}
+
+/** Page section with a stacked heading + optional lead (no split headers, no eyebrows). */
+export function Section({ id, title, lead, children, className = '' }: SectionProps) {
+  const headingId = `${id}-heading`;
   return (
-    <motion.section
-      id={id}
-      className="py-16"
-      initial={{ opacity: 0, y: 8 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.25 }}
-    >
-      <h2 className="mb-6 font-heading text-2xl font-semibold tracking-tight text-text">{title}</h2>
-      {children}
-    </motion.section>
+    <section id={id} aria-labelledby={headingId} className={`border-t border-line py-20 md:py-28 ${className}`}>
+      <div className="mx-auto max-w-page px-5 sm:px-8">
+        <header className="reveal mb-12 max-w-2xl">
+          <h2 id={headingId} className="text-3xl font-semibold tracking-tight text-fg md:text-4xl">
+            {title}
+          </h2>
+          {lead ? <p className="mt-4 text-base leading-relaxed text-muted md:text-lg">{lead}</p> : null}
+        </header>
+        {children}
+      </div>
+    </section>
   );
 }

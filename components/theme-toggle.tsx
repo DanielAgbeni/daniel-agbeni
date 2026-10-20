@@ -1,38 +1,40 @@
 'use client';
 
-import * as React from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
+const subscribe = () => () => {};
+
+/** True only after hydration, without a setState-in-effect re-render. */
+function useHydrated(): boolean {
+  return useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
+}
+
 export function ThemeToggle() {
-  const { setTheme, theme, systemTheme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
+  const { resolvedTheme, setTheme } = useTheme();
+  const hydrated = useHydrated();
+  const isDark = hydrated && resolvedTheme === 'dark';
 
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    // Render a placeholder with the same dimensions to avoid layout shift
-    return (
-      <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-primary/20 text-text/70 transition hover:bg-primary/10 hover:text-primary">
-        <div className="h-5 w-5" />
-      </button>
-    );
-  }
-
-  const isDark = theme === 'dark' || (theme === 'system' && systemTheme === 'dark');
+  const toggle = useCallback(() => {
+    setTheme(isDark ? 'light' : 'dark');
+  }, [isDark, setTheme]);
 
   return (
     <button
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="flex h-9 w-9 items-center justify-center rounded-lg border border-border-line shadow-card text-text/70 transition hover:bg-primary/10 hover:text-primary"
-      aria-label="Toggle theme"
+      type="button"
+      onClick={toggle}
+      aria-label={hydrated ? `Switch to ${isDark ? 'light' : 'dark'} theme` : 'Toggle theme'}
+      className="inline-flex h-11 w-11 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-fg"
     >
-      {isDark ? (
-        <Sun className="h-4 w-4" />
+      {hydrated ? (
+        isDark ? <Sun className="h-[18px] w-[18px]" aria-hidden="true" /> : <Moon className="h-[18px] w-[18px]" aria-hidden="true" />
       ) : (
-        <Moon className="h-4 w-4" />
+        <span className="h-[18px] w-[18px]" aria-hidden="true" />
       )}
     </button>
   );
